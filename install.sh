@@ -23,11 +23,11 @@ add-apt-repository \
    stable"
 
 
-echo "deb https://apt.kubernetes.io/ kubernetes-$(lsb_release -cs) main" \
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" \
     | tee -a /etc/apt/sources.list.d/kubernetes.list
 
 
-apt update
+apt update && apt upgrade
 
 apt install -y docker-ce docker-ce-cli containerd.io kubectl kubelet kubeadm
 apt-mark hold kubelet kubeadm kubectl
