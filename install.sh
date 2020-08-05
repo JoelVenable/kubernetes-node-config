@@ -45,3 +45,23 @@ ufw allow 30000:32767/tcp
 
 
 sed -i 's/ENABLED=no/ENABLED=yes/' /etc/ufw/ufw.conf
+
+
+
+#  Extend the filesystem to 100% of the disk
+lvextend -l 100%FREE /dev/ubuntu-vg/ubuntu-lv
+
+resize2fs /dev/ubuntu-vg/ubuntu-lv
+
+apt install -y quota
+
+mkdir /k8s
+
+
+
+#  disable swap
+
+swapoff -a; sed -i '/swap/d' /etc/fstab
+
+
+
