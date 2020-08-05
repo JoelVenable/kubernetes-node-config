@@ -1,12 +1,26 @@
 . /etc/os-release
 
+modprobe overlay
+modprobe br_netfilter
 
+cat > /etc/sysctl.d/99-kubernetes-cri.conf <<EOF
+net.bridge.bridge-nf-call-iptables  = 1
+net.ipv4.ip_forward                 = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+EOF
 
-sudo sh -c "echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/testing:/cri-o:/1.18/xUbuntu_18.04/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:testing:cri-o:1.18.list"
-wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:testing:cri-o:1.18/xUbuntu_18.04/Release.key -O Release.key
-sudo apt-key add - < Release.key
-sudo apt-get update
-sudo apt-get install cri-o
+sysctl --system
 
-systemctl daemon-reload
-systemctl start crio
+add-apt-repository ppa:projectatomic/ppa -y && apt update
+
+cat > /etc/apt/sources.list.d/projectatomics.list <<EOF
+deb http://ppa.launchpad.net/projectatomic/ppa/ubuntu bionic main
+deb-src http://ppa.launchpad.net/projectatomic/ppa/ubuntu bionic main
+EOF
+
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8BECF1637AD8C79D
+
+apt update
+
+apt install -y cri-o-1.18
+
