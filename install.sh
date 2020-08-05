@@ -64,4 +64,12 @@ mkdir /k8s
 swapoff -a; sed -i '/swap/d' /etc/fstab
 
 
+#  Copy docker daemon config
+cp daemon.json /etc/docker
+
+mkdir -p /etc/systemd/system/docker.service.d
+
+systemctl daemon-reload
+systemctl restart docker
+systemctl enable docker
 
