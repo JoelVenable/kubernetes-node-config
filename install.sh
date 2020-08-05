@@ -1,0 +1,47 @@
+#!/bin/bash
+
+
+apt install -y python3-pip \
+   apt-transport-https \
+   ca-certificates \
+   curl \
+   gnupg-agent \
+   gnupg2 \
+   software-properties-common
+
+
+#  Add docker GPG key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+
+#  Add kubernetes GPG key
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+
+#  Add docker repository
+add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+
+
+echo "deb https://apt.kubernetes.io/ kubernetes-$(lsb_release -cs) main" \
+    | tee -a /etc/apt/sources.list.d/kubernetes.list
+
+
+apt update
+
+apt install -y docker-ce docker-ce-cli containerd.io kubectl kubelet kubeadm
+apt-mark hold kubelet kubeadm kubectl
+
+
+ufw enable
+ufw allow ssh
+ufw allow 6443  #  Kubernetes API server
+ufw allow 2379
+ufw allow 2380
+ufw allow 10250
+ufw allow 10251
+ufw allow 10252
+ufw allow 30000:32767/tcp
+
+
+sed -i 's/ENABLED=no/ENABLED=yes/' /etc/ufw/ufw.conf
